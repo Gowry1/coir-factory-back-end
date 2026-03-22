@@ -27,4 +27,17 @@ export const ResponseMessages = {
     FETCHED: 'Department fetched successfully',
     NOT_FOUND: 'Department not found',
   },
+  AUTH: {
+    LOGIN_SUCCESS: 'Login successful',
+    TOKEN_REFRESHED: 'Token refreshed successfully',
+    LOGOUT_SUCCESS: 'Logout successful',
+    PROFILE_FETCHED: 'Profile fetched successfully',
+  },
+  PAYROLL: {
+    CREATED: 'Payroll created successfully',
+    FETCHED: 'Payroll fetched successfully',
+    UPDATED: 'Payroll updated successfully',
+    PAID: 'Payroll marked as paid successfully',
+    DELETED: 'Payroll deleted successfully',
+  },
 } as const;

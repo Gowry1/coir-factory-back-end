@@ -8,6 +8,10 @@ import { EmployeeAttendanceModule } from './attendance/employee-attendance.modul
 import { ProductModule } from './product/product.module';
 import { CategoryModule } from './category/category.module';
 import { DepartmentModule } from './department/department.module';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
+import { RedisModule } from './redis/redis.module';
+import { PayrollModule } from './payroll/payroll.module';
 
 @Module({
   imports: [
@@ -33,6 +37,10 @@ import { DepartmentModule } from './department/department.module';
     ProductModule,
     CategoryModule,
     DepartmentModule,
+    AuthModule,
+    UserModule,
+    RedisModule,
+    PayrollModule,
   ],
   controllers: [AppController],
   providers: [AppService],
