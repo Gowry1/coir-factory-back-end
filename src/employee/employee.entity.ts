@@ -5,8 +5,10 @@ import {
   Column,
   OneToOne,
   JoinColumn,
+  ManyToOne,
 } from 'typeorm';
 import { User } from 'src/user/user.entity';
+import { Department } from 'src/department/department.entity';
 
 @Entity('employees')
 export class Employee extends DateAudit {
@@ -28,8 +30,12 @@ export class Employee extends DateAudit {
   @Column({ nullable: true })
   phone?: string;
 
-  @Column({ nullable: true })
-  department?: string;
+  @ManyToOne(() => Department, (department) => department.employees, {
+    nullable: true,
+    eager: true,
+  })
+  @JoinColumn({ name: 'departmentId' })
+  department: Department;
 
   @Column({ nullable: true })
   position?: string;

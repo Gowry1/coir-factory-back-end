@@ -5,7 +5,6 @@ import {
   IsNumber,
   IsOptional,
   IsDateString,
-  MinLength,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -18,10 +17,6 @@ export class CreateEmployeeDto {
 
   @IsEmail()
   email: string;
-
-  @IsString()
-  @MinLength(6)
-  password: string;
 
   @IsOptional()
   @IsBoolean()
@@ -40,8 +35,8 @@ export class CreateEmployeeDto {
   phone?: string;
 
   @IsOptional()
-  @IsString()
-  department?: string;
+  @IsNumber()
+  departmentId?: number;
 
   @IsOptional()
   @IsString()

@@ -5,18 +5,19 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
+import { hash } from 'bcryptjs';
+
 import { Employee } from './employee.entity';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
-import { UserService } from 'src/user/user.service';
-import * as bcryptjs from 'bcryptjs';
+import { Department } from 'src/department/department.entity';
+import { User } from 'src/user/user.entity';
 
 @Injectable()
 export class EmployeeService {
   constructor(
     @InjectRepository(Employee)
     private readonly employeeRepo: Repository<Employee>,
-    private readonly userService: UserService,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -39,24 +40,43 @@ export class EmployeeService {
     await queryRunner.startTransaction();
 
     try {
-      const hashedPassword = await bcryptjs.hash(body.password, 10);
+      let department: Department | undefined;
 
-      const user = await this.userService.create(body.email, hashedPassword);
+      if (body.departmentId) {
+        const foundDepartment = await queryRunner.manager.findOne(Department, {
+          where: { id: body.departmentId },
+        });
 
-      const employee = this.employeeRepo.create({
+        if (!foundDepartment) {
+          throw new NotFoundException('Department not found');
+        }
+
+        department = foundDepartment;
+      }
+      const plainPassword = generateRandomPassword(10);
+      const hashedPassword = await hash(plainPassword, 10);
+
+      const user = queryRunner.manager.create(User, {
+        email: body.email,
+        password: hashedPassword,
+      });
+
+      const savedUser = await queryRunner.manager.save(User, user);
+
+      const employee = queryRunner.manager.create(Employee, {
         firstName: body.firstName,
         lastName: body.lastName,
         email: body.email,
         employeeId: body.employeeId,
         phone: body.phone,
-        department: body.department,
+        department: department,
         position: body.position,
         joinDate: body.joinDate ? new Date(body.joinDate) : undefined,
         address: body.address,
         profilePictureUrl: body.profilePictureUrl,
         isActive: body.isActive ?? true,
         salary: body.salary,
-        user,
+        user: savedUser,
       });
 
       const savedEmployee = await queryRunner.manager.save(Employee, employee);
@@ -106,4 +126,16 @@ export class EmployeeService {
 
     return { message: 'Employee deleted successfully' };
   }
+}
+
+function generateRandomPassword(length = 10): string {
+  const chars =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+  let password = '';
+
+  for (let i = 0; i < length; i++) {
+    password += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+
+  return password;
 }

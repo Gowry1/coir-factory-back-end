@@ -1,5 +1,6 @@
 import { DateAudit } from 'src/common/date/date-audit.entity';
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Employee } from 'src/employee/employee.entity';
 
 @Entity()
 export class Department extends DateAudit {
@@ -8,4 +9,7 @@ export class Department extends DateAudit {
 
   @Column({ unique: true })
   departmentName: string;
+
+  @OneToMany(() => Employee, (employee) => employee.department)
+  employees: Employee[];
 }
